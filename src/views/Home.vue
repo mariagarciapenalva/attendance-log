@@ -9,7 +9,7 @@
                          class="border-2 border-indigo-800 text-indigo-800 text-xl font-bold py-4 rounded-xl hover:bg-indigo-50">Crear cuenta de alumno</router-link>
             <div class="text-sm text-gray-500 leading-relaxed bg-white rounded-xl p-3 text-left">
                 <p class="font-semibold text-gray-700 mb-1">Cuentas de demostración (contraseña: <code>demo1234</code>)</p>
-                <p>Profesora admin: <code>marta</code> · Profesor: <code>alex</code></p>
+                <p>Profesor admin: <code>sensei</code> · Profesor: <code>profe1</code></p>
                 <p>Alumnos: <code>laia</code>, <code>aitana</code>, <code>bruno</code>…</p>
             </div>
         </div>
