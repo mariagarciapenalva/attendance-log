@@ -45,7 +45,9 @@ The repository is open to suggestions, contributions and advice. I am the main a
 **Belts and stripes.**
 
 - Each student has a belt system (BJJ adults or BJJ kids), a belt and 0–4 stripes. New students start as white belt; the teacher can correct it (e.g. for someone who arrives with another belt).
-- Progress counts the classes attended since the last promotion. The suggested number of classes per stripe is configurable in `shared/belts.js` and is only a guideline: the teacher decides.
+- Each belt has its own number of classes per stripe (adults: white 35, blue 65, purple 75, brown 85, black 1000 per degree). After the 4th stripe, one more block of classes leads to the next belt. Students see how many classes they need for the next stripe and for the next belt.
+- Belt changes also need a minimum time at the current belt, following the IBJJF graduation system: blue 2 years, purple 1.5 years, brown 1 year, 3 years per black-belt degree.
+- All numbers live in `shared/belts.js` and are only guidelines: the teacher decides.
 - Students who reach the guideline are flagged "★ listo para grado".
 - Promotions and corrections are saved to a history (date, from, to, teacher).
 
@@ -197,7 +199,9 @@ El repositorio está abierto a sugerencias, contribuciones y consejos. Soy la au
 **Cinturones y grados.**
 
 - Cada alumno tiene un sistema de cinturones (BJJ adultos o BJJ infantil), un cinturón y de 0 a 4 grados. Los alumnos nuevos empiezan con cinturón blanco; el profesor puede corregirlo (por ejemplo, si alguien llega con otro cinturón).
-- El progreso cuenta las clases asistidas desde la última promoción. El número de clases por grado se configura en `shared/belts.js` y es solo orientativo: decide el profesor.
+- Cada cinturón tiene su propio número de clases por grado (adultos: blanco 35, azul 65, morado 75, marrón 85, negro 1000 por grado). Tras el 4.º grado, un bloque más de clases lleva al siguiente cinturón. El alumno ve cuántas clases le faltan para el siguiente grado y para el siguiente cinturón.
+- Los cambios de cinturón exigen además un tiempo mínimo en el cinturón actual, según el sistema de graduación de la IBJJF: azul 2 años, morado 1,5 años, marrón 1 año y 3 años por grado de cinturón negro.
+- Todas las cifras están en `shared/belts.js` y son orientativas: decide el profesor.
 - Los alumnos que llegan a esa cifra aparecen marcados como "★ listo para grado".
 - Las promociones y correcciones quedan guardadas en un historial (fecha, de qué a qué, qué profesor).
 
