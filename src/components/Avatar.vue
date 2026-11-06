@@ -19,6 +19,6 @@
 <template>
     <img v-if="person.photo" :src="person.photo" alt="" :style="box" class="rounded-full object-cover shrink-0" />
     <span v-else
-          :style="{ ...box, background: `hsl(${hue} 55% 86%)`, color: `hsl(${hue} 50% 28%)` }"
-          class="rounded-full grid place-items-center font-black shrink-0 select-none">{{ initials }}</span>
+        :style="{ ...box, background: `hsl(${hue} 55% 86%)`, color: `hsl(${hue} 50% 28%)` }"
+        class="rounded-full grid place-items-center font-black shrink-0 select-none">{{ initials }}</span>
 </template>
