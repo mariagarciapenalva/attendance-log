@@ -3,8 +3,7 @@
     import { TrashIcon, ArrowUpCircleIcon } from '@heroicons/vue/24/solid'
     import Avatar from './Avatar.vue'
     import BeltBar from './BeltBar.vue'
-    import { BELT_SYSTEMS, beltLabel, nextRank } from '../../shared/belts.js'
-
+    import { BELT_SYSTEMS, beltInfo, beltLabel, nextRank } from '../../shared/belts.js'
     // Teachers edit name, groups and belt. Photo, username and email belong to the student.
     const props = defineProps({
         initial: { type: Object, required: true },
