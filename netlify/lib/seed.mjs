@@ -48,9 +48,9 @@ const classes = [
 
 // ---------- teachers (demo names) ----------
 const teachers = [
-  { id: 't1', name: 'Sensei Marta', username: 'marta', email: 'marta@demo.dojo', passwordHash: DEMO_PASSWORD,
+  { id: 't1', name: 'sensei', username: 'sensei', email: 'sensei@demo.dojo', passwordHash: DEMO_PASSWORD,
     photo: null, groupIds: ['bjj', 'grappling', 'libre', 'demo'], isAdmin: true },
-  { id: 't2', name: 'Profe Álex', username: 'alex', email: 'alex@demo.dojo', passwordHash: DEMO_PASSWORD,
+  { id: 't2', name: 'profe1', username: 'profe1', email: 'profe1@demo.dojo', passwordHash: DEMO_PASSWORD,
     photo: null, groupIds: ['kids', 'intro', 'demo'], isAdmin: false },
 ]
 
@@ -116,7 +116,7 @@ const missed = attendance
   .sort((a, b) => b.date.localeCompare(a.date))[0]
 const requests = missed
   ? [{ id: 'r1', studentId: 's5', classId: missed.classId, date: missed.date,
-       note: 'Vine a esta clase pero creo que no me marcaste', status: 'pending', createdAt: new Date().toISOString() }]
+      note: 'Vine a esta clase pero creo que no me marcaste', status: 'pending', createdAt: new Date().toISOString() }]
   : []
 
 export const seed = { groups, classes, teachers, students, requests, attendance, promotions: [] }
