@@ -84,8 +84,8 @@ const students = PEOPLE.map(([name, groupIds, , [system, index, stripes]], i) =>
   photo: null, // demo accounts show initials; real students upload a photo when registering
   groupIds: [...groupIds, 'demo'],
   belt: { system, index, stripes },
-  promotedAt: daysAgo([26, 10, 14, 20, 12, 9, 25, 16, 11, 8, 27, 12, 15][i] ?? 14), // staggered so only a few are "ready"
-  createdAt: daysAgo(60),
+  promotedAt: daysAgo([26, 10, 14, 20, 12, 9, 25, 16, 11, 8, 27, 12, 15][i] ?? 14), // last stripe or belt
+  beltSince: daysAgo([800, 300, 600, 420, 40, 760, 330, 500, 120, 200, 260, 150, 90][i] ?? 365), // date of current belt  createdAt: daysAgo(60),
 }))
 
 // ---------- 4 weeks of fake history ----------
