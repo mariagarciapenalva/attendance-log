@@ -4,6 +4,7 @@
     import Avatar from './Avatar.vue'
     import BeltBar from './BeltBar.vue'
     import { BELT_SYSTEMS, beltInfo, beltLabel, nextRank } from '../../shared/belts.js'
+
     // Teachers edit name, groups and belt. Photo, username and email belong to the student.
     const props = defineProps({
         initial: { type: Object, required: true },
@@ -22,7 +23,9 @@
     const system = computed(() => BELT_SYSTEMS[fields.belt.system])
     const next = computed(() => nextRank(savedBelt.value))
     const beltChanged = computed(() => ['system', 'index', 'stripes'].some((k) => fields.belt[k] !== savedBelt.value[k]))
+    const maxStripes = computed(() => beltInfo(fields.belt)?.maxStripes ?? 4)
     const resetBelt = () => { fields.belt.index = 0; fields.belt.stripes = 0 }
+    const clampStripes = () => { fields.belt.stripes = Math.min(fields.belt.stripes, maxStripes.value) }
 
     const handleSubmit = async () => {
         loading.value = true
@@ -76,9 +79,15 @@
                 <legend class="text-sm font-bold text-gray-700 px-1">Cinturón</legend>
                 <BeltBar :belt="fields.belt" />
                 <p class="text-sm">{{ beltLabel(fields.belt) }}</p>
-                <p v-if="progress && !beltChanged" class="text-xs text-gray-500">
-                    {{ progress.attended }} de {{ progress.required }} clases desde el último grado (orientativo)
-                </p>
+                <div v-if="progress && !beltChanged" class="text-xs text-gray-600 grid gap-0.5">
+                    <p>{{ progress.attended }} de {{ progress.required }} clases desde el último grado
+                        · faltan {{ progress.toNextStripe }} para el siguiente {{ progress.nextIsBelt ? 'cinturón' : 'grado' }}</p>
+                    <p v-if="progress.toNextBelt !== null && !progress.nextIsBelt">Faltan {{ progress.toNextBelt }} clases para el siguiente cinturón</p>
+                    <p v-if="progress.time.minMonths" :class="progress.time.ok ? 'text-green-700' : 'text-amber-700'">
+                        Tiempo mínimo en este cinturón antes del siguiente: {{ progress.time.minMonths }} meses (lleva {{ progress.time.months }})
+                    </p>
+                    <p class="text-gray-400">Orientativo: decide el profesor.</p>
+                </div>
 
                 <button v-if="next && !beltChanged" type="button" @click="handlePromote" :disabled="loading"
                         :class="['flex items-center justify-center gap-1 font-bold py-2 px-3 rounded-lg text-white disabled:opacity-60',
@@ -93,11 +102,11 @@
                             <option v-for="(s, key) in BELT_SYSTEMS" :key="key" :value="key">{{ s.name }}</option>
                         </select>
                         <div class="flex gap-2">
-                            <select v-model.number="fields.belt.index" class="border-2 p-2 rounded-md bg-white flex-1">
+                            <select v-model.number="fields.belt.index" @change="clampStripes" class="border-2 p-2 rounded-md bg-white flex-1">
                                 <option v-for="(b, i) in system.belts" :key="b.name" :value="i">{{ b.name }}</option>
                             </select>
                             <select v-model.number="fields.belt.stripes" class="border-2 p-2 rounded-md bg-white">
-                                <option v-for="n in system.maxStripes + 1" :key="n" :value="n - 1">{{ n - 1 }} grados</option>
+                                <option v-for="n in maxStripes + 1" :key="n" :value="n - 1">{{ n - 1 }} grados</option>
                             </select>
                         </div>
                         <p class="text-xs text-gray-500">

@@ -6,7 +6,7 @@
     import Avatar from '../components/Avatar.vue'
     import BeltBar from '../components/BeltBar.vue'
     import Spinner from '../components/Spinner.vue'
-    import { beltLabel } from '../../shared/belts.js'
+    import { BELT_SYSTEMS, beltLabel } from '../../shared/belts.js'
     import { fmtTime, fmtDate, firstName, weekdayShort } from '../utils/format'
 
     const router = useRouter()
@@ -28,6 +28,9 @@
 
     const progress = computed(() => me.value?.student.progress)
     const progressPct = computed(() => progress.value ? Math.min(100, (progress.value.attended / progress.value.required) * 100) : 0)
+    const plan = computed(() => BELT_SYSTEMS[me.value?.student.belt?.system])
+    const showPlan = ref(false)
+    const months = (m) => (m >= 12 && m % 12 === 0 ? `${m / 12} año${m > 12 ? 's' : ''}` : `${m} meses`)
 
     const load = async () => {
         try { me.value = await fetchMe() }
@@ -80,10 +83,46 @@
                     <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
                         <div class="h-full bg-indigo-800" :style="{ width: progressPct + '%' }"></div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">
-                        {{ progress.attended }} de {{ progress.required }} clases desde tu último grado (orientativo, decide tu profe)
+                    <div class="grid grid-cols-2 gap-2 mt-3">
+                        <div class="bg-white rounded-xl drop-shadow-md p-3">
+                            <p class="text-2xl font-black tabular-nums">{{ progress.toNextStripe }}</p>
+                            <p class="text-xs text-gray-500">clases para el siguiente {{ progress.nextIsBelt ? 'cinturón' : 'grado' }}</p>
+                        </div>
+                        <div class="bg-white rounded-xl drop-shadow-md p-3">
+                            <p class="text-2xl font-black tabular-nums">{{ progress.toNextBelt ?? '—' }}</p>
+                            <p class="text-xs text-gray-500">clases para el siguiente cinturón</p>
+                        </div>
+                    </div>
+                    <p v-if="progress.time.minMonths" class="text-xs mt-2" :class="progress.time.ok ? 'text-green-700' : 'text-amber-700'">
+                        Tiempo mínimo en tu cinturón antes del siguiente: {{ months(progress.time.minMonths) }} · llevas {{ progress.time.months }} meses
                     </p>
+                    <p class="text-xs text-gray-400 mt-1">Orientativo: tu profe decide cuándo graduarte.</p>
                 </div>
+            </section>
+
+            <section v-if="plan" class="bg-white rounded-xl drop-shadow-md p-4">
+                <button @click="showPlan = !showPlan" class="w-full flex justify-between font-bold">
+                    Plan de graduación <span class="text-indigo-800 text-sm">{{ showPlan ? 'Ocultar' : 'Ver' }}</span>
+                </button>
+                <table v-if="showPlan" class="w-full text-sm mt-3">
+                    <thead>
+                        <tr class="text-left text-gray-500">
+                            <th class="py-1 font-medium">Cinturón</th>
+                            <th class="py-1 font-medium text-right">Clases / grado</th>
+                            <th class="py-1 font-medium text-right">Tiempo mínimo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        <tr v-for="(b, i) in plan.belts" :key="b.name"
+                            :class="i === me.student.belt.index ? 'font-bold' : ''">
+                            <td class="py-2 flex items-center gap-2">
+                                <span class="w-4 h-2 rounded-sm ring-1 ring-black/20" :style="{ background: b.color }"></span>{{ b.name }}
+                            </td>
+                            <td class="py-2 text-right tabular-nums">{{ b.classesPerStripe }}</td>
+                            <td class="py-2 text-right">{{ b.minMonths ? months(b.minMonths) : '—' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </section>
 
             <section>
