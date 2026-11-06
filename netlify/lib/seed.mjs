@@ -46,7 +46,7 @@ const classes = [
   })),
 ]
 
-// ---------- teachers (demo names) ----------
+// ---------- teachers (demo) ----------
 const teachers = [
   { id: 't1', name: 'sensei', username: 'sensei', email: 'sensei@demo.dojo', passwordHash: DEMO_PASSWORD,
     photo: null, groupIds: ['bjj', 'grappling', 'libre', 'demo'], isAdmin: true },
@@ -85,7 +85,8 @@ const students = PEOPLE.map(([name, groupIds, , [system, index, stripes]], i) =>
   groupIds: [...groupIds, 'demo'],
   belt: { system, index, stripes },
   promotedAt: daysAgo([26, 10, 14, 20, 12, 9, 25, 16, 11, 8, 27, 12, 15][i] ?? 14), // last stripe or belt
-  beltSince: daysAgo([800, 300, 600, 420, 40, 760, 330, 500, 120, 200, 260, 150, 90][i] ?? 365), // date of current belt  createdAt: daysAgo(60),
+  beltSince: daysAgo([800, 300, 600, 420, 40, 760, 330, 500, 120, 200, 260, 150, 90][i] ?? 365), // date of current belt
+  createdAt: daysAgo(60),
 }))
 
 // ---------- 4 weeks of fake history ----------
@@ -116,7 +117,7 @@ const missed = attendance
   .sort((a, b) => b.date.localeCompare(a.date))[0]
 const requests = missed
   ? [{ id: 'r1', studentId: 's5', classId: missed.classId, date: missed.date,
-      note: 'Vine a esta clase pero creo que no me marcaste', status: 'pending', createdAt: new Date().toISOString() }]
+       note: 'Vine a esta clase pero creo que no me marcaste', status: 'pending', createdAt: new Date().toISOString() }]
   : []
 
 export const seed = { groups, classes, teachers, students, requests, attendance, promotions: [] }
