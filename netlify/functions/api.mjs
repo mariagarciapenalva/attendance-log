@@ -2,7 +2,7 @@ import { getStore } from '@netlify/blobs'
 import { createHmac, timingSafeEqual } from 'node:crypto'
 import { seed } from '../lib/seed.mjs'
 import { hashPassword, checkPassword } from '../lib/passwords.mjs'
-import { BELT_SYSTEMS, nextRank } from '../../shared/belts.js'
+import { BELT_SYSTEMS, beltInfo, nextRank, rankProgress } from '../../shared/belts.js'
 
 const REQUEST_WINDOW_DAYS = 14 // students can ask about classes up to 2 weeks back
 const STORE_NAME = 'dojo-v3'
@@ -98,19 +98,22 @@ const publicGroupIds = (db) => db.groups.filter((g) => g.id !== 'demo').map((g) 
 
 function validBelt(belt) {
   const sys = BELT_SYSTEMS[belt?.system]
-  return !!sys
-    && Number.isInteger(belt.index) && belt.index >= 0 && belt.index < sys.belts.length
-    && Number.isInteger(belt.stripes) && belt.stripes >= 0 && belt.stripes <= sys.maxStripes
+  if (!sys || !Number.isInteger(belt.index) || belt.index < 0 || belt.index >= sys.belts.length) return false
+  return Number.isInteger(belt.stripes) && belt.stripes >= 0 && belt.stripes <= sys.belts[belt.index].maxStripes
 }
 const sameBelt = (a, b) => a?.system === b?.system && a?.index === b?.index && a?.stripes === b?.stripes
 const defaultBelt = (groupIds) => ({ system: groupIds.includes('kids') ? 'bjj-kids' : 'bjj-adult', index: 0, stripes: 0 })
 
 function beltProgress(db, s) {
-  const sys = BELT_SYSTEMS[s.belt?.system]
-  if (!sys) return null
+  if (!beltInfo(s.belt)) return null
   const attended = db.attendance
     .filter((a) => a.studentId === s.id && a.present && a.date > (s.promotedAt ?? '')).length
-  return { attended, required: sys.classesPerStripe, ready: attended >= sys.classesPerStripe && !!nextRank(s.belt) }
+  return rankProgress(s.belt, {
+    attended,
+    beltSince: s.beltSince ?? s.createdAt ?? s.promotedAt, // older records have no beltSince
+    promotedAt: s.promotedAt,
+    today: madridNow().date,
+  })
 }
 
 function attendanceRate(db, id) {
@@ -171,6 +174,7 @@ export default async (req) => {
       groupIds: [...groupIds, 'demo'], // 'demo' only for the demo open mat; remove for real use
       belt: defaultBelt(groupIds),
       promotedAt: now.date,
+      beltSince: now.date,
       createdAt: now.date,
     })
     await save(db)
@@ -326,7 +330,8 @@ export default async (req) => {
         const to = nextRank(s.belt)
         if (!to) return fail('Ya tiene el rango máximo')
         db.promotions.push({ studentId: s.id, date: now.date, from: s.belt, to, by: t.id, kind: 'promotion' })
-        db.students[i] = { ...s, belt: to, promotedAt: now.date }
+        const beltChanged = to.index !== s.belt.index
+        db.students[i] = { ...s, belt: to, promotedAt: now.date, ...(beltChanged ? { beltSince: now.date } : {}) }
         await save(db)
         return json(studentView(db, db.students[i]))
       }
@@ -346,7 +351,8 @@ export default async (req) => {
           if (!validBelt(body.belt)) return fail('Cinturón no válido', 422)
           const belt = { system: body.belt.system, index: body.belt.index, stripes: body.belt.stripes }
           db.promotions.push({ studentId: s.id, date: now.date, from: s.belt, to: belt, by: t.id, kind: 'adjust' })
-          updated = { ...updated, belt, promotedAt: now.date }
+          const beltChanged = belt.system !== s.belt?.system || belt.index !== s.belt?.index
+          updated = { ...updated, belt, promotedAt: now.date, ...(beltChanged ? { beltSince: now.date } : {}) }
         }
 
         db.students[i] = updated
