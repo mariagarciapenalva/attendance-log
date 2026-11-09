@@ -6,7 +6,14 @@ const readUser = () => {
 }
 
 const token = ref(localStorage.getItem('token'))
-const user = ref(readUser()) // { id, name, role: 'student' | 'teacher', isAdmin }
+const user = ref(readUser()) // { id, name, role, isAdmin, academyId, academies (teachers: dojos they can enter) }
+
+const setSession = (data) => {
+    token.value = data.token
+    user.value = data.user
+    localStorage.setItem('token', data.token)
+    localStorage.setItem('user', JSON.stringify(data.user))
+}
 
 // register (students)
 const register = async (fields) => {
@@ -34,11 +41,7 @@ const login = async (identifier, password) => {
         })
         const data = await response.json()
         if (!response.ok) throw new Error(data.message || 'Login failed')
-
-        token.value = data.token
-        user.value = data.user
-        localStorage.setItem('token', data.token)
-        localStorage.setItem('user', JSON.stringify(data.user))
+        setSession(data)
         return { success: true }
     } catch (error) {
         return { success: false, error: error.message }
@@ -57,6 +60,9 @@ const logout = () => {
 const isAuthenticated = (role = null) => !!token.value && (!role || user.value?.role === role)
 const isAdmin = () => !!user.value?.isAdmin
 
+// where each role lands after logging in
+const homePath = () => ({ superadmin: '/superadmin', teacher: '/profesor', student: '/alumno' })[user.value?.role] ?? '/'
+
 export default function useAuth() {
-    return { token, user, register, login, logout, isAuthenticated, isAdmin }
+    return { token, user, setSession, register, login, logout, isAuthenticated, isAdmin, homePath }
 }

@@ -17,8 +17,7 @@ export default defineConfig({
         runtimeCaching: [
           {
             // last known roster (teacher) and profile (student): fresh when online, cached when offline
-            urlPattern: ({ url }) => url.pathname === '/api/teacher/state' || url.pathname === '/api/me',
-            handler: 'NetworkFirst',
+            urlPattern: ({ url }) => ['/api/teacher/state', '/api/me', '/api/attendance'].includes(url.pathname),            handler: 'NetworkFirst',
             options: { cacheName: 'api-data', networkTimeoutSeconds: 5 },
           },
         ],

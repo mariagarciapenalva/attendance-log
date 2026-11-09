@@ -57,7 +57,7 @@ async function syncOutbox() {
     try {
         for (const item of readOutbox()) {
             try {
-                await request(`attendance/${item.classId}`, { method: "PUT", body: { marks: item.marks, date: item.date } })
+                await request(`attendance/${encodeURIComponent(item.classId)}`, { method: "PUT", body: { marks: item.marks, date: item.date } })
             } catch (e) {
                 if (e instanceof NetworkError || e.status === 401) break // try again later (or after logging in)
                 syncError.value = `No se pudo enviar la asistencia del ${item.date}: ${e.message}`
@@ -85,11 +85,10 @@ export function useDojo() {
         }
     }
 
-    // Saves today's attendance; without internet it is queued and sent later
-    const saveAttendance = async (classId, marks) => {
-        const date = todayInDojo()
+    // Saves the attendance of one class on a day (today by default); without internet it is queued and sent later
+    const saveAttendance = async (classId, marks, date = todayInDojo()) => {
         try {
-            await request(`attendance/${classId}`, { method: "PUT", body: { marks, date } })
+            await request(`attendance/${encodeURIComponent(classId)}`, { method: "PUT", body: { marks, date } })
             return { queued: false }
         } catch (e) {
             if (!(e instanceof NetworkError)) throw e
@@ -103,21 +102,45 @@ export function useDojo() {
         teacherState, loadError, fetchTeacherState,
         online, pendingCount, syncError, syncOutbox,
         // public
-        fetchGroups: () => request('groups'),
+        fetchAcademies: () => request('academies'),
+        fetchGroups: (academyId) => request(`groups?academy=${encodeURIComponent(academyId)}`),
         // any logged-in user
         fetchProfile: () => request('profile'),
         updateProfile: (fields) => request('profile', { method: "PUT", body: fields }),
         // student
         fetchMe: () => request('me'),
         requestAttendance: (classId, date, note) => request('requests', { method: "POST", body: { classId, date, note } }),
+        // "I trained out": { date, academyId } for a dojo of the app, or { date, place } for anywhere else
+        requestTrainingOut: (fields) => request('requests', { method: "POST", body: { ...fields, out: true } }),
         // teacher
         saveAttendance,
+        fetchAttendance: (date) => request(`attendance?date=${date}`),
         approveRequest: (id) => request(`requests/${id}/approve`, { method: "POST" }),
         rejectRequest: (id, reply) => request(`requests/${id}/reject`, { method: "POST", body: { reply } }),
         updateStudent: (id, s) => request(`students/${id}`, { method: "PUT", body: s }),
         deleteStudent: (id) => request(`students/${id}`, { method: "DELETE" }),
         promoteStudent: (id) => request(`students/${id}/promote`, { method: "POST" }),
-        // admin
+        searchGuests: (q) => request(`guests?q=${encodeURIComponent(q)}`),
+        // dojos: switch, ask for access, and (admins) answer requests
+        switchAcademy: async (academyId) => {
+            const data = await request('teacher/switch', { method: "POST", body: { academyId } })
+            useAuth().setSession(data)
+            teacherState.value = null
+            return data
+        },
+        fetchAccess: () => request('access'),
+        requestAccess: (academyId, role, note) => request('access', { method: "POST", body: { academyId, role, note } }),
+        approveAccess: (id, groupIds) => request(`access/${id}/approve`, { method: "POST", body: { groupIds } }),
+        rejectAccess: (id) => request(`access/${id}/reject`, { method: "POST" }),
+        removeAccess: (teacherId) => request(`access/${teacherId}`, { method: "DELETE" }),
+        // academy admin
+        createGroup: (name) => request('groups', { method: "POST", body: { name } }),
+        createClass: (cls) => request('classes', { method: "POST", body: cls }),
+        deleteClass: (id) => request(`classes/${encodeURIComponent(id)}`, { method: "DELETE" }),
+        // superadmin
+        fetchAdminAcademies: () => request('admin/academies'),
+        createAcademy: (academy) => request('admin/academies', { method: "POST", body: academy }),
+        // academy admin: team
         createTeacher: (t) => request('teachers', { method: "POST", body: t }),
         updateTeacher: (id, t) => request(`teachers/${id}`, { method: "PUT", body: t }),
         deleteTeacher: (id) => request(`teachers/${id}`, { method: "DELETE" }),
