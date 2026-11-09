@@ -63,7 +63,7 @@ The demo uses the dojo's real BJJ and grappling timetable, defined in `netlify/l
 | 20:00   |                | Grappling             |                | Grappling             | Grappling      |                   |
 | 21:00   | Jiujitsu       |                       | Jiujitsu       |                       |                |                   |
 
-All classes are assumed to last 1 hour. An extra always-open **Open mat (demo)** class lets the roster be shown at any time of day; remove it before real use.
+All classes are assumed to last 1 hour.
 
 ### Tech stack
 
@@ -207,7 +207,7 @@ El repositorio está abierto a sugerencias, contribuciones y consejos. Soy la au
 
 ### Horario
 
-La demo usa el horario real de BJJ y grappling del dojo (tabla en la sección en inglés), definido en `netlify/lib/seed.mjs`. Se supone que todas las clases duran 1 hora. Hay una clase extra **Open mat (demo)** siempre abierta para poder enseñar la lista a cualquier hora; hay que quitarla antes del uso real.
+La demo usa el horario real de BJJ y grappling del dojo (tabla en la sección en inglés), definido en `netlify/lib/seed.mjs`. Se supone que todas las clases duran 1 hora.
 
 ### Instalación, despliegue y API
 
