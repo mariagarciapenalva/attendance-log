@@ -5,7 +5,7 @@
     import PasswordToggle from '../components/PasswordToggle.vue'
     import Spinner from '../components/Spinner.vue'
 
-    const { login, user } = useAuth()
+    const { login, homePath } = useAuth()
     const router = useRouter()
     const route = useRoute()
 
@@ -24,7 +24,7 @@
         const result = await login(fields.identifier, fields.password)
         loading.value = false
         if (result.success) {
-            router.push(user.value.role === 'teacher' ? '/profesor' : '/alumno')
+            router.push(homePath())
         } else {
             error.value = result.error
         }

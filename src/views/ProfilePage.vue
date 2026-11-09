@@ -50,7 +50,8 @@
 <template>
     <TeacherNav v-if="isTeacher" />
     <div class="max-w-md mx-auto p-4 flex flex-col gap-4">
-        <router-link v-if="!isTeacher" to="/alumno" class="text-indigo-800 font-medium">← Volver</router-link>
+        <router-link v-if="!isTeacher" :to="user?.role === 'superadmin' ? '/superadmin' : '/alumno'"
+                     class="text-indigo-800 font-medium">← Volver</router-link>
         <h1 class="font-black text-2xl">Mi perfil</h1>
 
         <div v-if="!profile && !message" class="flex justify-center py-20"><Spinner /></div>

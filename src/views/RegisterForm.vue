@@ -1,6 +1,6 @@
 <script setup>
-    import { reactive, ref, onMounted } from 'vue'
-    import { useRouter } from 'vue-router'
+    import { reactive, ref, watch, onMounted } from 'vue'
+    import { useRouter, useRoute } from 'vue-router'
     import useAuth from '../composables/useAuth'
     import { useDojo } from '../composables/useDojo'
     import PasswordToggle from '../components/PasswordToggle.vue'
@@ -8,19 +8,24 @@
     import Spinner from '../components/Spinner.vue'
 
     const { register } = useAuth()
-    const { fetchGroups } = useDojo()
+    const { fetchAcademies, fetchGroups } = useDojo()
     const router = useRouter()
+    const route = useRoute()
 
     const fields = reactive({
-        name: '', username: '', email: '', password: '', passwordConfirmation: '',
+        academyId: '', name: '', username: '', email: '', password: '', passwordConfirmation: '',
         photo: null, groupIds: [], consent: false,
     })
+    const academies = ref([])
     const groups = ref([])
+    // a link like .../#/register?academia=dojo1 opens the form with the academy already chosen
+    const fixedAcademy = ref(false)
     const error = ref('')
     const loading = ref(false)
     const passwordVisible = ref(false)
 
     const handleRegister = async () => {
+        if (!fields.academyId) { error.value = 'Elige tu academia'; return }
         if (!fields.photo) { error.value = 'Sube una foto tuya para que tu profe te reconozca'; return }
         if (!fields.groupIds.length) { error.value = 'Elige al menos una clase'; return }
         if (fields.password !== fields.passwordConfirmation) { error.value = 'Las contraseñas no coinciden'; return }
@@ -33,8 +38,27 @@
         else error.value = result.error
     }
 
+    // classes depend on the academy
+    watch(() => fields.academyId, async (academyId) => {
+        fields.groupIds = []
+        groups.value = []
+        if (!academyId) return
+        try { groups.value = await fetchGroups(academyId) } catch (e) { error.value = e.message }
+    })
+
     onMounted(async () => {
-        try { groups.value = await fetchGroups() } catch (e) { error.value = e.message }
+        try {
+            academies.value = await fetchAcademies()
+            const wanted = route.query.academia
+            if (wanted && academies.value.some((a) => a.id === wanted)) {
+                fields.academyId = wanted
+                fixedAcademy.value = true
+            } else if (academies.value.length === 1) {
+                fields.academyId = academies.value[0].id
+            }
+        } catch (e) {
+            error.value = e.message
+        }
     })
 
     const input = 'border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md focus:outline-none focus:border-blue-500 font-normal'
@@ -50,6 +74,15 @@
             <h1 class="font-black text-3xl text-center mt-2">Crear cuenta de alumno</h1>
 
             <form class="bg-white shadow-lg rounded-lg py-8 px-5 mb-10 mt-5 flex flex-col gap-5" @submit.prevent="handleRegister">
+                <label class="block text-gray-700 text-sm font-bold">
+                    Academia
+                    <select id="r-academy" v-model="fields.academyId" :disabled="fixedAcademy" required
+                            class="border-2 w-full p-2 mt-2 rounded-md bg-white font-normal disabled:bg-gray-100">
+                        <option value="" disabled>Elige tu academia</option>
+                        <option v-for="a in academies" :key="a.id" :value="a.id">{{ a.name }}</option>
+                    </select>
+                </label>
+
                 <PhotoInput v-model="fields.photo" :name="fields.name" />
 
                 <label class="block text-gray-700 text-sm font-bold">
@@ -83,6 +116,7 @@
 
                 <fieldset class="border-2 rounded-md p-3">
                     <legend class="text-sm font-bold text-gray-700 px-1">¿A qué clases vienes?</legend>
+                    <p v-if="!fields.academyId" class="text-sm text-gray-500">Elige primero tu academia.</p>
                     <label v-for="g in groups" :key="g.id" class="flex items-center gap-2 py-1">
                         <input type="checkbox" :value="g.id" v-model="fields.groupIds" /> {{ g.name }}
                     </label>
