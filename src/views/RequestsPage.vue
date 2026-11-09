@@ -20,7 +20,7 @@
                 student: state.value.students.find((s) => s.id === r.studentId),
                 cls: state.value.classes.find((c) => c.id === r.classId),
             }))
-            .filter((r) => r.student && r.cls)
+            .filter((r) => r.student && (r.cls || r.out))
             .sort((a, b) => a.date.localeCompare(b.date))
     })
 
@@ -44,7 +44,7 @@
     <TeacherNav />
     <div class="max-w-3xl mx-auto p-4 flex flex-col gap-3">
         <h2 class="font-black text-2xl">Solicitudes de registro</h2>
-        <p class="text-gray-500 text-sm">Alumnos que dicen haber venido a una clase donde no constan. Si apruebas, la clase cuenta para su cinturón.</p>
+        <p class="text-gray-500 text-sm">Alumnos que dicen haber venido a una clase donde no constan, o que tuvieron que entrenar en otro dojo. Si apruebas, cuenta como clase para su cinturón.</p>
         <p v-if="error" class="text-red-600">{{ error }}</p>
 
         <div v-if="!state" class="flex justify-center py-20"><Spinner /></div>
@@ -55,7 +55,11 @@
                 <Avatar :person="r.student" :size="48" />
                 <div class="min-w-0">
                     <p class="font-bold">{{ r.student.name }}</p>
-                    <p class="text-sm text-gray-600">{{ weekdayShort(r.date) }} {{ fmtDate(r.date) }} · {{ fmtTime(r.cls.start) }} · {{ r.cls.name }}</p>
+                    <p v-if="r.out" class="text-sm text-gray-600">
+                        {{ weekdayShort(r.date) }} {{ fmtDate(r.date) }} ·
+                        <span class="font-semibold text-indigo-800">Entrenó fuera</span> · {{ r.place }}
+                    </p>
+                    <p v-else class="text-sm text-gray-600">{{ weekdayShort(r.date) }} {{ fmtDate(r.date) }} · {{ fmtTime(r.cls.start) }} · {{ r.cls.name }}</p>
                 </div>
             </div>
             <p v-if="r.note" class="text-sm bg-gray-50 rounded-lg p-2">“{{ r.note }}”</p>
