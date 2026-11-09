@@ -1,8 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">     <!-- 32×32 drawing canvas -->
-    <rect width="32" height="32" rx="6" fill="#3730a3"/>            <!-- indigo square, rounded corners -->
-    <rect x="4" y="13" width="24" height="6" rx="1" fill="#fff"/>   <!-- white belt across the middle -->
-    <rect x="21" y="13" width="5" height="6" fill="#111827"/>       <!-- black rank bar -->
-    <rect x="22" y="14" width="1" height="4" fill="#fff"/>        <!-- stripe 1 -->
-    <rect x="24" y="14" width="1" height="4" fill="#fff"/>        <!-- stripe 2 -->
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#e0e7ff"/>
+  <g>
+    <rect x="104" y="120" width="304" height="40" rx="6" fill="#f3f4f6"/>
+    <rect x="316" y="120" width="70" height="40" fill="#111827"/>
+    <rect x="104" y="120" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+  </g>
+  <g>
+    <rect x="104" y="178" width="304" height="40" rx="6" fill="#1d4ed8"/>
+    <rect x="316" y="178" width="70" height="40" fill="#111827"/>
+    <rect x="104" y="178" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+  </g>
+  <g>
+    <rect x="104" y="236" width="304" height="40" rx="6" fill="#7e22ce"/>
+    <rect x="316" y="236" width="70" height="40" fill="#111827"/>
+    <rect x="104" y="236" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+  </g>
+  <g>
+    <rect x="104" y="294" width="304" height="40" rx="6" fill="#78350f"/>
+    <rect x="316" y="294" width="70" height="40" fill="#111827"/>
+    <rect x="104" y="294" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+  </g>
+  <g>
+    <rect x="104" y="352" width="304" height="40" rx="6" fill="#111827"/>
+    <rect x="316" y="352" width="70" height="40" fill="#b91c1c"/>
+    <rect x="104" y="352" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+  </g>
 </svg>
