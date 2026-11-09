@@ -1,28 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="geometricPrecision">
   <rect width="512" height="512" rx="96" fill="#e0e7ff"/>
-  <g>
+  <g stroke="#475569" stroke-width="4">
     <rect x="104" y="120" width="304" height="40" rx="6" fill="#f3f4f6"/>
-    <rect x="316" y="120" width="70" height="40" fill="#111827"/>
-    <rect x="104" y="120" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
-  </g>
-  <g>
     <rect x="104" y="178" width="304" height="40" rx="6" fill="#1d4ed8"/>
-    <rect x="316" y="178" width="70" height="40" fill="#111827"/>
-    <rect x="104" y="178" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
-  </g>
-  <g>
     <rect x="104" y="236" width="304" height="40" rx="6" fill="#7e22ce"/>
-    <rect x="316" y="236" width="70" height="40" fill="#111827"/>
-    <rect x="104" y="236" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
-  </g>
-  <g>
     <rect x="104" y="294" width="304" height="40" rx="6" fill="#78350f"/>
-    <rect x="316" y="294" width="70" height="40" fill="#111827"/>
-    <rect x="104" y="294" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+    <rect x="104" y="352" width="304" height="40" rx="6" fill="#111827"/>
   </g>
   <g>
-    <rect x="104" y="352" width="304" height="40" rx="6" fill="#111827"/>
-    <rect x="316" y="352" width="70" height="40" fill="#b91c1c"/>
-    <rect x="104" y="352" width="304" height="40" rx="6" fill="none" stroke="#0b0f1a" stroke-opacity=".35" stroke-width="3"/>
+    <rect x="316" y="122" width="70" height="36" fill="#111827"/>
+    <rect x="316" y="180" width="70" height="36" fill="#111827"/>
+    <rect x="316" y="238" width="70" height="36" fill="#111827"/>
+    <rect x="316" y="296" width="70" height="36" fill="#111827"/>
+    <rect x="316" y="354" width="70" height="36" fill="#b91c1c"/>
   </g>
 </svg>
