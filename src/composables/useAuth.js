@@ -50,6 +50,8 @@ const logout = () => {
     user.value = null
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    // forget the data cached for offline use, so the next person on this phone doesn't see it
+    if (typeof caches !== 'undefined') caches.delete('api-data').catch(() => {})
 }
 
 const isAuthenticated = (role = null) => !!token.value && (!role || user.value?.role === role)

@@ -7,7 +7,7 @@
     import Spinner from '../components/Spinner.vue'
     import { fmtTime } from '../utils/format'
 
-    const { teacherState: state, loadError, fetchTeacherState, saveAttendance } = useDojo()
+    const { teacherState: state, loadError, fetchTeacherState, saveAttendance, online, pendingCount, syncError } = useDojo()
 
     const classId = ref(null)
     const overrides = ref({})
@@ -54,10 +54,16 @@
     const handleSave = async () => {
         saving.value = true
         try {
-            await saveAttendance(cls.value.id, Object.fromEntries(rows.value.map((r) => [r.student.id, r.present])))
-            overrides.value = {}
-            await fetchTeacherState()
-            message.value = 'Asistencia guardada'
+            const marks = Object.fromEntries(rows.value.map((r) => [r.student.id, r.present]))
+            const { queued } = await saveAttendance(cls.value.id, marks)
+            if (queued) {
+                // keep the marks on screen; they will be sent when the connection comes back
+                message.value = 'Guardada en el móvil. Se enviará al recuperar la conexión.'
+            } else {
+                overrides.value = {}
+                await fetchTeacherState()
+                message.value = 'Asistencia guardada'
+            }
         } catch (e) {
             message.value = e.message
         } finally {
@@ -79,8 +85,17 @@
         <div v-else-if="!state" class="flex justify-center py-20"><Spinner /></div>
 
         <template v-else>
+            <div v-if="!online || pendingCount" class="bg-gray-800 text-white rounded-xl p-3 mb-4 text-sm">
+                <p v-if="!online" class="font-semibold">Sin conexión. Puedes pasar lista igualmente.</p>
+                <p v-if="pendingCount">
+                    {{ pendingCount }} {{ pendingCount === 1 ? 'lista pendiente' : 'listas pendientes' }} de enviar.
+                    Se enviarán solas al volver internet.
+                </p>
+            </div>
+            <p v-if="syncError" class="bg-red-100 text-red-800 rounded-xl p-3 mb-4 text-sm">{{ syncError }}</p>
+
             <router-link v-if="pendingRequests" to="/profesor/solicitudes"
-                         class="block bg-amber-100 text-amber-800 rounded-xl p-3 mb-4 font-semibold">
+                        class="block bg-amber-100 text-amber-800 rounded-xl p-3 mb-4 font-semibold">
                 Tienes {{ pendingRequests }} {{ pendingRequests === 1 ? 'solicitud pendiente' : 'solicitudes pendientes' }} →
             </router-link>
 

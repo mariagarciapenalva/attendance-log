@@ -281,18 +281,23 @@ export default async (req) => {
       })
     }
 
-    // Teacher records today's attendance for one class
+    // Teacher records attendance for one class: today, or up to 3 days back (saves made offline arrive late)
     if (method === 'PUT' && resource === 'attendance' && id) {
       const cls = db.classes.find((c) => c.id === id)
       if (!cls || !gids.includes(cls.groupId)) return fail('Esa clase no es de tus grupos', 403)
+      const date = body.date ?? now.date
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > now.date || date < shiftDate(now.date, -3)) {
+        return fail('Fecha de asistencia no válida (como mucho 3 días atrás)', 422)
+      }
+      if (isoWeekday(date) !== cls.weekday) return fail('Esa clase no se imparte ese día', 422)
       const marks = body.marks ?? {}
-      db.attendance = db.attendance.filter((a) => !(a.classId === id && a.date === now.date))
+      db.attendance = db.attendance.filter((a) => !(a.classId === id && a.date === date))
       for (const [studentId, present] of Object.entries(marks)) {
-        db.attendance.push({ classId: id, date: now.date, studentId, present: !!present, by: t.id })
+        db.attendance.push({ classId: id, date, studentId, present: !!present, by: t.id })
       }
       // a pending request for this class/day is approved automatically if the teacher marked them present
       for (const r of db.requests) {
-        if (r.status === 'pending' && r.classId === id && r.date === now.date && marks[r.studentId]) {
+        if (r.status === 'pending' && r.classId === id && r.date === date && marks[r.studentId]) {
           Object.assign(r, { status: 'approved', resolvedBy: t.id, resolvedAt: new Date().toISOString() })
         }
       }
